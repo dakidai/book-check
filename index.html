@@ -191,8 +191,17 @@
             <h1>📚 书籍核验工具</h1>
             <p class="subtitle">粘贴全部书名，自动识别书籍是否在限免池中（支持模糊匹配）<br>非限免池书籍需求请走【特殊审批】</p>
 
-            <textarea class="input-area" id="inputText" placeholder="粘贴书单内容..."></textarea>
+            <textarea class="input-area" id="inputText" placeholder="粘贴书单内容，或上传文件..."></textarea>
             <button class="btn" onclick="checkBooks()">核验书籍</button>
+
+            <div style="margin-top: 16px; text-align: center;">
+                <span style="color: #666; font-size: 13px;">或上传文件：</span>
+                <label style="display: inline-block; margin-left: 8px; padding: 8px 16px; background: #f3f4f6; border-radius: 6px; cursor: pointer; font-size: 14px; color: #667eea; font-weight: 500;">
+                    选择文件
+                    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.txt" style="display: none;" onchange="handleFileUpload(event)">
+                </label>
+                <span id="fileName" style="margin-left: 8px; color: #888; font-size: 13px;"></span>
+            </div>
 
             <div class="stats" id="stats" style="display: none;">
                 <div class="stat">
@@ -209,6 +218,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script>
         const books = [
             "永久免费内容",
@@ -437,6 +447,38 @@
                     ${r.pass && r.matchedBook ? `<span class="source">匹配: ${r.matchedBook}</span>` : ''}
                 </div>
             `).join('');
+        }
+
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = file.name;
+
+            const extension = file.name.split('.').pop().toLowerCase();
+            let text = '';
+
+            try {
+                if (extension === 'txt' || extension === 'csv') {
+                    text = await file.text();
+                } else if (extension === 'xlsx' || extension === 'xls') {
+                    const data = await file.arrayBuffer();
+                    const workbook = XLSX.read(data);
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    text = jsonData.flat().filter(cell => cell !== null && cell !== undefined).join('\n');
+                }
+
+                const existingText = document.getElementById('inputText').value;
+                if (existingText.trim()) {
+                    document.getElementById('inputText').value = existingText + '\n' + text;
+                } else {
+                    document.getElementById('inputText').value = text;
+                }
+            } catch (error) {
+                alert('文件读取失败：' + error.message);
+            }
         }
     </script>
 </body>
