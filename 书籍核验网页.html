@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>书籍核验工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .input-area {
+            width: 100%;
+            min-height: 150px;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .input-area:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px 24px;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 24px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-value.pass {
+            color: #22c55e;
+        }
+
+        .stat-value.fail {
+            color: #ef4444;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .result {
+            margin-top: 24px;
+        }
+
+        .result-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-item.pass {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .result-item.fail {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .result-item .icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .result-item.pass .icon {
+            background: #22c55e;
+            color: white;
+        }
+
+        .result-item.fail .icon {
+            background: #ef4444;
+            color: white;
+        }
+
+        .result-item .book-name {
+            flex: 1;
+            word-break: break-all;
+        }
+
+        .result-item .source {
+            font-size: 12px;
+            color: #666;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .no-result {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>📚 书籍核验工具</h1>
+            <p class="subtitle">粘贴全部书名，自动识别书籍是否在限免池中（支持模糊匹配）<br>非限免池书籍需求请走【特殊审批】</p>
+
+            <textarea class="input-area" id="inputText" placeholder="粘贴书单内容..."></textarea>
+            <button class="btn" onclick="checkBooks()">核验书籍</button>
+
+            <div class="stats" id="stats" style="display: none;">
+                <div class="stat">
+                    <div class="stat-value pass" id="passCount">0</div>
+                    <div class="stat-label">在限免池</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value fail" id="failCount">0</div>
+                    <div class="stat-label">不在限免池</div>
+                </div>
+            </div>
+
+            <div class="result" id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const books = [
+            "永久免费内容",
+            "新人限免书单-365\n（限制有效期30天内）",
+            "新人限免书单-元气\n（限制有效期30天内）",
+            "新人限免书单-非凡\n（限制有效期30天内）",
+            "免费专区限免书籍",
+            "非暴力沟通",
+            "小狗钱钱",
+            "要钱还是要生活",
+            "佐贺的超级阿嬷",
+            "逆商",
+            "我的情绪为何总被他人左右",
+            "宋氏家族",
+            "金钱心理学",
+            "中年之路",
+            "父母的语言",
+            "少年发声",
+            "香奈儿的态度",
+            "\"错误\"的行为",
+            "这书能让你戒烟",
+            "人生只有一件事",
+            "破解欺凌的游戏",
+            "局外人",
+            "如何结交比你更优秀的人",
+            "这本书可能救你的命",
+            "活出心花怒放的人生",
+            "好好恋爱",
+            "玛丽莲·梦露",
+            "不去讨好任何人",
+            "在世界上找到你的位置",
+            "低风险创业",
+            "如何让你爱的人爱上你",
+            "堂吉诃德",
+            "戒糖：改变一生的科学饮食法",
+            "炎症",
+            "曾国藩的正面与侧面",
+            "王阳明大传（全三册）",
+            "世说新语",
+            "端粒：年轻、健康、长寿的新科学",
+            "修复玻璃心",
+            "内在动机：自主掌控人生的力量",
+            "蛤蟆先生去看心理医生",
+            "减肥不是挨饿，而是与食物合作",
+            "天才的学习方法",
+            "你好，小孩",
+            "纳瓦尔宝典",
+            "苏东坡：在困境中定风波",
+            "你可以生气，但不要越想越气",
+            "你是你吃出来的",
+            "考试脑科学",
+            "越过内心那座山",
+            "断舍离",
+            "不执着叫看破，不完美是生活",
+            "拿铁因素",
+            "扫除道",
+            "亲密关系",
+            "肠子的小心思",
+            "我战胜了坏情绪",
+            "家庭的觉醒",
+            "樊登讲论语：学而",
+            "高绩效教练",
+            "我与地坛",
+            "听懂另一半",
+            "火种：寻找中国复兴之日",
+            "别生气啦",
+            "爱的博弈",
+            "袁隆平的世界",
+            "像绅士淑女一样服务",
+            "大法官金斯伯格",
+            "如何正确吵架",
+            "横向领导力",
+            "人生的底气",
+            "廊桥遗梦",
+            "最温柔的教养",
+            "万历十五年",
+            "斯坦福高效睡眠法",
+            "呼啸山庄",
+            "让孩子幸福的语言",
+            "杨绛传",
+            "运动改造大脑",
+            "繁花",
+            "不咆哮，让孩子爱上学习",
+            "我们为什么会受骗",
+            "小王子",
+            "有无之境：王阳明哲学的精神",
+            "幸福的勇气",
+            "可复制的领导力",
+            "夏洛的网",
+            "献给阿尔吉侬的花束",
+            "曼巴精神：科比自传",
+            "干法",
+            "千与千寻",
+            "枪炮、病菌与钢铁（徐英瑾）",
+            "好妈妈胜过好老师",
+            "额尔古纳河右岸",
+            "稀缺：我们是如何陷入贫穷与忙碌的",
+            "说文解字十二讲",
+            "幸福的婚姻",
+            "百年孤独",
+            "突破天性",
+            "小妇人",
+            "权力:为什么只为某些人所拥有",
+            "红楼梦",
+            "重来也不会好过现在",
+            "中国救护",
+            "即兴演讲",
+            "了凡四训",
+            "被讨厌的勇气",
+            "更年期年轻人",
+            "刻意练习",
+            "飘",
+            "梦的解析",
+            "伴生",
+            "传习录说什么",
+            "幸福之路",
+            "少年派的奇幻漂流",
+            "养育男孩",
+            "你当像鸟飞往你的山",
+            "活法",
+            "肖申克的救赎",
+            "红楼梦第一集",
+            "第3选择",
+            "杀死一只知更鸟",
+            "红楼梦第二集",
+            "苏东坡传",
+            "红楼梦第三集",
+            "贫穷的本质",
+            "红楼梦第四集",
+            "刘邦",
+            "你要的是幸福，还是对错",
+            "销售就是要玩转情商",
+            "知识大迁移",
+            "贪婪的多巴胺",
+            "终身成长",
+            "人体简史",
+            "万古江河"
+        ];
+
+        // 清理书名中的特殊字符用于匹配
+        function normalizeBookName(name) {
+            return name.replace(/[""''""'']/g, '').trim().toLowerCase();
+        }
+
+        // 模糊匹配函数
+        function fuzzyMatch(text, bookName) {
+            const normalizedText = normalizeBookName(text);
+            const normalizedBook = normalizeBookName(bookName);
+
+            // 完全包含
+            if (normalizedText.includes(normalizedBook) || normalizedBook.includes(normalizedText)) {
+                return true;
+            }
+
+            // 检查核心关键词（去掉括号内容）
+            const coreText = normalizedText.replace(/\([^)]*\)/g, '').trim();
+            const coreBook = normalizedBook.replace(/\([^)]*\)/g, '').trim();
+
+            if (coreText.includes(coreBook) || coreBook.includes(coreText)) {
+                return true;
+            }
+
+            // 关键词匹配（针对红楼梦等系列）
+            const keywords = normalizedBook.split(/[,，、:：]/).filter(k => k.length >= 4);
+            for (const keyword of keywords) {
+                if (normalizedText.includes(keyword)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function checkBooks() {
+            const inputText = document.getElementById('inputText').value;
+            const resultDiv = document.getElementById('result');
+            const statsDiv = document.getElementById('stats');
+
+            if (!inputText.trim()) {
+                resultDiv.innerHTML = '<div class="no-result">请输入要核验的内容</div>';
+                statsDiv.style.display = 'none';
+                return;
+            }
+
+            // 提取可能的书名（按换行、逗号、分号等分隔）
+            const lines = inputText.split(/[\n\r,，;；、.。!！?？]+/).map(s => s.trim()).filter(s => s.length >= 2);
+
+            // 去重
+            const uniqueTexts = [...new Set(lines)];
+
+            let passCount = 0;
+            let failCount = 0;
+            const results = [];
+
+            for (const text of uniqueTexts) {
+                let found = false;
+                let matchedBook = '';
+
+                for (const book of books) {
+                    if (fuzzyMatch(text, book)) {
+                        found = true;
+                        matchedBook = book;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    passCount++;
+                    results.push({ text, matchedBook, pass: true });
+                } else {
+                    failCount++;
+                    results.push({ text, matchedBook, pass: false });
+                }
+            }
+
+            // 显示统计
+            document.getElementById('passCount').textContent = passCount;
+            document.getElementById('failCount').textContent = failCount;
+            statsDiv.style.display = 'flex';
+
+            // 显示结果
+            resultDiv.innerHTML = results.map(r => `
+                <div class="result-item ${r.pass ? 'pass' : 'fail'}">
+                    <span class="icon">${r.pass ? '✓' : '✗'}</span>
+                    <span class="book-name">${r.text}</span>
+                    ${r.pass && r.matchedBook ? `<span class="source">匹配: ${r.matchedBook}</span>` : ''}
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
