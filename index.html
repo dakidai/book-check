@@ -178,6 +178,45 @@
             border-radius: 4px;
         }
 
+        .category-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        .category-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .category-tag.permanent {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .category-tag.new-365 {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .category-tag.new-yuanqi {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .category-tag.new-feifan {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .category-tag.free-zone {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
         .no-result {
             text-align: center;
             color: #666;
@@ -220,143 +259,139 @@
 
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script>
-        const books = [
-            "永久免费内容",
-            "新人限免书单-365\n（限制有效期30天内）",
-            "新人限免书单-元气\n（限制有效期30天内）",
-            "新人限免书单-非凡\n（限制有效期30天内）",
-            "免费专区限免书籍",
-            "非暴力沟通",
-            "小狗钱钱",
-            "要钱还是要生活",
-            "佐贺的超级阿嬷",
-            "逆商",
-            "我的情绪为何总被他人左右",
-            "宋氏家族",
-            "金钱心理学",
-            "中年之路",
-            "父母的语言",
-            "少年发声",
-            "香奈儿的态度",
-            "\"错误\"的行为",
-            "这书能让你戒烟",
-            "人生只有一件事",
-            "破解欺凌的游戏",
-            "局外人",
-            "如何结交比你更优秀的人",
-            "这本书可能救你的命",
-            "活出心花怒放的人生",
-            "好好恋爱",
-            "玛丽莲·梦露",
-            "不去讨好任何人",
-            "在世界上找到你的位置",
-            "低风险创业",
-            "如何让你爱的人爱上你",
-            "堂吉诃德",
-            "戒糖：改变一生的科学饮食法",
-            "炎症",
-            "曾国藩的正面与侧面",
-            "王阳明大传（全三册）",
-            "世说新语",
-            "端粒：年轻、健康、长寿的新科学",
-            "修复玻璃心",
-            "内在动机：自主掌控人生的力量",
-            "蛤蟆先生去看心理医生",
-            "减肥不是挨饿，而是与食物合作",
-            "天才的学习方法",
-            "你好，小孩",
-            "纳瓦尔宝典",
-            "苏东坡：在困境中定风波",
-            "你可以生气，但不要越想越气",
-            "你是你吃出来的",
-            "考试脑科学",
-            "越过内心那座山",
-            "断舍离",
-            "不执着叫看破，不完美是生活",
-            "拿铁因素",
-            "扫除道",
-            "亲密关系",
-            "肠子的小心思",
-            "我战胜了坏情绪",
-            "家庭的觉醒",
-            "樊登讲论语：学而",
-            "高绩效教练",
-            "我与地坛",
-            "听懂另一半",
-            "火种：寻找中国复兴之日",
-            "别生气啦",
-            "爱的博弈",
-            "袁隆平的世界",
-            "像绅士淑女一样服务",
-            "大法官金斯伯格",
-            "如何正确吵架",
-            "横向领导力",
-            "人生的底气",
-            "廊桥遗梦",
-            "最温柔的教养",
-            "万历十五年",
-            "斯坦福高效睡眠法",
-            "呼啸山庄",
-            "让孩子幸福的语言",
-            "杨绛传",
-            "运动改造大脑",
-            "繁花",
-            "不咆哮，让孩子爱上学习",
-            "我们为什么会受骗",
-            "小王子",
-            "有无之境：王阳明哲学的精神",
-            "幸福的勇气",
-            "可复制的领导力",
-            "夏洛的网",
-            "献给阿尔吉侬的花束",
-            "曼巴精神：科比自传",
-            "干法",
-            "千与千寻",
-            "枪炮、病菌与钢铁（徐英瑾）",
-            "好妈妈胜过好老师",
-            "额尔古纳河右岸",
-            "稀缺：我们是如何陷入贫穷与忙碌的",
-            "说文解字十二讲",
-            "幸福的婚姻",
-            "百年孤独",
-            "突破天性",
-            "小妇人",
-            "权力:为什么只为某些人所拥有",
-            "红楼梦",
-            "重来也不会好过现在",
-            "中国救护",
-            "即兴演讲",
-            "了凡四训",
-            "被讨厌的勇气",
-            "更年期年轻人",
-            "刻意练习",
-            "飘",
-            "梦的解析",
-            "伴生",
-            "传习录说什么",
-            "幸福之路",
-            "少年派的奇幻漂流",
-            "养育男孩",
-            "你当像鸟飞往你的山",
-            "活法",
-            "肖申克的救赎",
-            "红楼梦第一集",
-            "第3选择",
-            "杀死一只知更鸟",
-            "红楼梦第二集",
-            "苏东坡传",
-            "红楼梦第三集",
-            "贫穷的本质",
-            "红楼梦第四集",
-            "刘邦",
-            "你要的是幸福，还是对错",
-            "销售就是要玩转情商",
-            "知识大迁移",
-            "贪婪的多巴胺",
-            "终身成长",
-            "人体简史",
-            "万古江河"
-        ];
+        [
+    { name: "非暴力沟通", categories: ["永久免费", "新人限免-365"] },
+    { name: "小狗钱钱", categories: ["新人限免-元气"] },
+    { name: "要钱还是要生活", categories: ["新人限免-非凡"] },
+    { name: "佐贺的超级阿嬷", categories: ["免费专区"] },
+    { name: "逆商", categories: ["永久免费", "新人限免-365"] },
+    { name: "我的情绪为何总被他人左右", categories: ["新人限免-365"] },
+    { name: "宋氏家族", categories: ["新人限免-元气"] },
+    { name: "金钱心理学", categories: ["新人限免-非凡"] },
+    { name: "中年之路", categories: ["免费专区"] },
+    { name: "父母的语言", categories: ["永久免费"] },
+    { name: "少年发声", categories: ["新人限免-365"] },
+    { name: "香奈儿的态度", categories: ["新人限免-元气"] },
+    { name: "“错误”的行为", categories: ["新人限免-非凡"] },
+    { name: "这书能让你戒烟", categories: ["免费专区"] },
+    { name: "人生只有一件事", categories: ["永久免费", "新人限免-365"] },
+    { name: "破解欺凌的游戏", categories: ["新人限免-365"] },
+    { name: "局外人", categories: ["新人限免-元气"] },
+    { name: "如何结交比你更优秀的人", categories: ["新人限免-非凡"] },
+    { name: "这本书可能救你的命", categories: ["免费专区"] },
+    { name: "活出心花怒放的人生", categories: ["永久免费", "新人限免-365"] },
+    { name: "好好恋爱", categories: ["新人限免-365"] },
+    { name: "玛丽莲·梦露", categories: ["新人限免-元气"] },
+    { name: "不去讨好任何人", categories: ["新人限免-非凡"] },
+    { name: "在世界上找到你的位置", categories: ["免费专区"] },
+    { name: "低风险创业", categories: ["永久免费", "新人限免-365"] },
+    { name: "如何让你爱的人爱上你", categories: ["新人限免-365"] },
+    { name: "堂吉诃德", categories: ["新人限免-元气"] },
+    { name: "戒糖：改变一生的科学饮食法", categories: ["新人限免-非凡"] },
+    { name: "炎症", categories: ["免费专区"] },
+    { name: "曾国藩的正面与侧面", categories: ["永久免费", "新人限免-365"] },
+    { name: "王阳明大传（全三册）", categories: ["新人限免-365"] },
+    { name: "世说新语", categories: ["新人限免-元气"] },
+    { name: "端粒：年轻、健康、长寿的新科学", categories: ["新人限免-非凡"] },
+    { name: "修复玻璃心", categories: ["免费专区"] },
+    { name: "内在动机：自主掌控人生的力量", categories: ["永久免费"] },
+    { name: "蛤蟆先生去看心理医生", categories: ["新人限免-元气"] },
+    { name: "减肥不是挨饿，而是与食物合作", categories: ["新人限免-非凡"] },
+    { name: "天才的学习方法", categories: ["免费专区"] },
+    { name: "你好，小孩", categories: ["永久免费"] },
+    { name: "纳瓦尔宝典", categories: ["新人限免-365"] },
+    { name: "苏东坡：在困境中定风波", categories: ["新人限免-元气"] },
+    { name: "你可以生气，但不要越想越气", categories: ["新人限免-非凡"] },
+    { name: "你是你吃出来的", categories: ["免费专区"] },
+    { name: "考试脑科学", categories: ["永久免费"] },
+    { name: "越过内心那座山", categories: ["新人限免-365"] },
+    { name: "断舍离", categories: ["新人限免-元气"] },
+    { name: "不执着叫看破，不完美是生活", categories: ["新人限免-非凡"] },
+    { name: "拿铁因素", categories: ["免费专区"] },
+    { name: "扫除道", categories: ["永久免费"] },
+    { name: "亲密关系", categories: ["新人限免-365"] },
+    { name: "肠子的小心思", categories: ["新人限免-元气"] },
+    { name: "我战胜了坏情绪", categories: ["新人限免-非凡"] },
+    { name: "家庭的觉醒", categories: ["免费专区"] },
+    { name: "樊登讲论语：学而", categories: ["永久免费"] },
+    { name: "高绩效教练", categories: ["新人限免-365"] },
+    { name: "我与地坛", categories: ["新人限免-元气"] },
+    { name: "听懂另一半", categories: ["新人限免-非凡"] },
+    { name: "火种：寻找中国复兴之日", categories: ["永久免费"] },
+    { name: "别生气啦", categories: ["新人限免-元气"] },
+    { name: "爱的博弈", categories: ["新人限免-非凡"] },
+    { name: "袁隆平的世界", categories: ["永久免费"] },
+    { name: "像绅士淑女一样服务", categories: ["新人限免-365"] },
+    { name: "大法官金斯伯格", categories: ["新人限免-元气"] },
+    { name: "如何正确吵架", categories: ["新人限免-非凡"] },
+    { name: "横向领导力", categories: ["永久免费"] },
+    { name: "人生的底气", categories: ["新人限免-365"] },
+    { name: "廊桥遗梦", categories: ["新人限免-元气"] },
+    { name: "最温柔的教养", categories: ["新人限免-非凡"] },
+    { name: "万历十五年", categories: ["永久免费"] },
+    { name: "斯坦福高效睡眠法", categories: ["新人限免-365"] },
+    { name: "呼啸山庄", categories: ["新人限免-元气"] },
+    { name: "让孩子幸福的语言", categories: ["新人限免-非凡"] },
+    { name: "杨绛传", categories: ["永久免费"] },
+    { name: "运动改造大脑", categories: ["新人限免-365"] },
+    { name: "繁花", categories: ["新人限免-元气", "新人限免-非凡"] },
+    { name: "不咆哮，让孩子爱上学习", categories: ["新人限免-非凡"] },
+    { name: "我们为什么会受骗", categories: ["永久免费"] },
+    { name: "小王子", categories: ["新人限免-元气"] },
+    { name: "有无之境：王阳明哲学的精神", categories: ["新人限免-非凡"] },
+    { name: "幸福的勇气", categories: ["永久免费"] },
+    { name: "可复制的领导力", categories: ["新人限免-365"] },
+    { name: "夏洛的网", categories: ["新人限免-元气"] },
+    { name: "献给阿尔吉侬的花束", categories: ["新人限免-非凡"] },
+    { name: "曼巴精神：科比自传", categories: ["永久免费"] },
+    { name: "干法", categories: ["新人限免-365"] },
+    { name: "千与千寻", categories: ["新人限免-元气", "永久免费"] },
+    { name: "枪炮、病菌与钢铁（徐英瑾）", categories: ["永久免费"] },
+    { name: "好妈妈胜过好老师", categories: ["新人限免-365"] },
+    { name: "额尔古纳河右岸", categories: ["新人限免-元气"] },
+    { name: "稀缺：我们是如何陷入贫穷与忙碌的", categories: ["新人限免-非凡"] },
+    { name: "说文解字十二讲", categories: ["永久免费"] },
+    { name: "幸福的婚姻", categories: ["新人限免-365"] },
+    { name: "百年孤独", categories: ["新人限免-元气"] },
+    { name: "突破天性", categories: ["新人限免-非凡"] },
+    { name: "小妇人", categories: ["永久免费"] },
+    { name: "权力:为什么只为某些人所拥有", categories: ["新人限免-365"] },
+    { name: "红楼梦", categories: ["新人限免-元气"] },
+    { name: "重来也不会好过现在", categories: ["新人限免-非凡"] },
+    { name: "中国救护", categories: ["永久免费"] },
+    { name: "即兴演讲", categories: ["新人限免-365"] },
+    { name: "了凡四训", categories: ["新人限免-元气"] },
+    { name: "被讨厌的勇气", categories: ["新人限免-非凡"] },
+    { name: "更年期年轻人", categories: ["永久免费"] },
+    { name: "刻意练习", categories: ["新人限免-365"] },
+    { name: "飘", categories: ["新人限免-元气"] },
+    { name: "梦的解析", categories: ["新人限免-非凡"] },
+    { name: "伴生", categories: ["永久免费"] },
+    { name: "传习录说什么", categories: ["新人限免-元气"] },
+    { name: "幸福之路", categories: ["新人限免-非凡"] },
+    { name: "少年派的奇幻漂流", categories: ["永久免费"] },
+    { name: "养育男孩", categories: ["新人限免-365"] },
+    { name: "你当像鸟飞往你的山", categories: ["新人限免-元气"] },
+    { name: "活法", categories: ["新人限免-365"] },
+    { name: "肖申克的救赎", categories: ["新人限免-元气"] },
+    { name: "红楼梦第一集", categories: ["永久免费"] },
+    { name: "第3选择", categories: ["新人限免-365"] },
+    { name: "杀死一只知更鸟", categories: ["新人限免-元气"] },
+    { name: "红楼梦第二集", categories: ["永久免费"] },
+    { name: "苏东坡传", categories: ["新人限免-365"] },
+    { name: "红楼梦第三集", categories: ["永久免费"] },
+    { name: "贫穷的本质", categories: ["新人限免-365"] },
+    { name: "红楼梦第四集", categories: ["永久免费"] },
+    { name: "刘邦", categories: ["新人限免-365"] },
+    { name: "你要的是幸福，还是对错", categories: ["新人限免-365"] },
+    { name: "销售就是要玩转情商", categories: ["新人限免-365"] },
+    { name: "知识大迁移", categories: ["新人限免-365"] },
+    { name: "贪婪的多巴胺", categories: ["新人限免-365"] },
+    { name: "终身成长", categories: ["新人限免-365"] },
+    { name: "人体简史", categories: ["新人限免-365"] },
+    { name: "万古江河", categories: ["新人限免-365"] },
+];
+
 
         // 清理书名中的特殊字符用于匹配
         function normalizeBookName(name) {
@@ -364,9 +399,9 @@
         }
 
         // 模糊匹配函数
-        function fuzzyMatch(text, bookName) {
+        function fuzzyMatch(text, book) {
             const normalizedText = normalizeBookName(text);
-            const normalizedBook = normalizeBookName(bookName);
+            const normalizedBook = normalizeBookName(book.name);
 
             // 完全包含
             if (normalizedText.includes(normalizedBook) || normalizedBook.includes(normalizedText)) {
@@ -392,6 +427,16 @@
             return false;
         }
 
+        // 获取分类标签的CSS类名
+        function getCategoryClass(category) {
+            if (category === '永久免费') return 'permanent';
+            if (category === '新人限免-365') return 'new-365';
+            if (category === '新人限免-元气') return 'new-yuanqi';
+            if (category === '新人限免-非凡') return 'new-feifan';
+            if (category === '免费专区') return 'free-zone';
+            return '';
+        }
+
         function checkBooks() {
             const inputText = document.getElementById('inputText').value;
             const resultDiv = document.getElementById('result');
@@ -415,7 +460,7 @@
 
             for (const text of uniqueTexts) {
                 let found = false;
-                let matchedBook = '';
+                let matchedBook = null;
 
                 for (const book of books) {
                     if (fuzzyMatch(text, book)) {
@@ -440,13 +485,19 @@
             statsDiv.style.display = 'flex';
 
             // 显示结果
-            resultDiv.innerHTML = results.map(r => `
+            resultDiv.innerHTML = results.map(r => {
+                const categoriesHtml = r.matchedBook && r.matchedBook.categories
+                    ? r.matchedBook.categories.map(cat => `<span class="category-tag ${getCategoryClass(cat)}">${cat}</span>`).join('')
+                    : '';
+                return `
                 <div class="result-item ${r.pass ? 'pass' : 'fail'}">
                     <span class="icon">${r.pass ? '✓' : '✗'}</span>
-                    <span class="book-name">${r.text}</span>
-                    ${r.pass && r.matchedBook ? `<span class="source">匹配: ${r.matchedBook}</span>` : ''}
+                    <div style="flex:1">
+                        <span class="book-name">${r.text}</span>
+                        ${r.pass && categoriesHtml ? `<div class="category-tags">${categoriesHtml}</div>` : ''}
+                    </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         async function handleFileUpload(event) {
